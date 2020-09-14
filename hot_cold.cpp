@@ -7,6 +7,7 @@ int main(int argc, char *argv[]){
 
 	int range{0};
 	int key{0}, guess{0};/*key is random secret number, guess is the current try*/
+	int typed{0}, ;/**/
 
 	if(argc < 2){
 		std::cout << "Without command line\nEnding program" << std::endl;
@@ -17,16 +18,26 @@ int main(int argc, char *argv[]){
 		main_menu(&range);
 		srand(time(NULL));/*non repeat rand number*/
 		key = rand() % range + 1;
-		if(guess == key){
-			std::cout << ">>> Yeah, correct guess!" << std::endl;
-		}else{
-			std::cout << ">>> Nop, it's"
-			while(guess != key){
-				
+		do{
+			if(typed == 0){
+				std::cin >> guess;
+				typed++;
+			}else{
+				guess_the_number(&guess);
 			}
-		}
+			if(guess == key){
+				std::cout << ">>> Yeah, correct guess!" << std::endl;
+				guess = -1;
+			}else{
+				std::cout << ">>> Nop, try again: ";
+			}
+		}while(guess > 0);
 	}
 	return 0;
+}
+
+void guess_the_number(int *guess){
+	
 }
 
 void main_menu(int *range){

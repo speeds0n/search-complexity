@@ -13,16 +13,23 @@ int bitonic_search(int v[], int first, int last);
 
 int binary_search_duplicates(int v[], int first, int last, int x);
 
+int *floor_ceiling(int v[], int first, int last, int x, int arr[]);
+
+int identity(int v[], int first, int last);
+
+int search_sorted_rotated(int v[], int first, int last, int x);
+
 int main(){
 
 //	int v[]{2,3,4,10,40,41,45,49,59,69,70,71};
 //	int v[]{2,3,4,10,40,41,45,49,59,69,70,71};
-	int v[]{8,7,6,5,4,3,2};
-	int x{3};
+//	int v[]{8,7,6,5,4,3,2};
+	int v[]{2};
+	int x{2};
 	int n{sizeof(v)/sizeof(v[0])};
 	int result = binary_search(v, 0, n-1, x);
 	(result == -1) ? std::cout <<"element is not present in array" << std::endl
-			:std::cout <<"element is present at index: " << result << std::endl;
+			:std::cout <<"find in v[" << result << "]: " << v[result] << std::endl;
 
 //	int v_1[]{3,5,7,4,6};
 //	int v_1[]{15, 16,18,17};
@@ -54,12 +61,151 @@ int main(){
 	int n_4 = binary_search_duplicates(v_4, 0, size_4 - 1, key_4);
 	(n_4 == -1) ?	std::cout << "dont find the key" << std::endl:
 			std::cout << "The key is: " << v_4[n_4] << " index: " << n_4 << std::endl;
+	
+	int v_5[]{4,9,11};
+	int key_5{6};
+	int size_5{sizeof(v_5)/sizeof(v_5[0])};
+	int n_5[]{0,0};
+	floor_ceiling(v_5, 0, size_5 - 1, key_5, n_5);
+	(n_5[0] == -1)?	std::cout << "dont find the floor" << std::endl:
+			std::cout << "the floor is: " << n_5[0] << std::endl;
+	(n_5[1] == -1)?	std::cout << "dont find the ceiling" << std::endl:
+			std::cout << "the ceiling is: " << n_5[1] << std::endl;
+
+//	int v_6[]{0,2,3,4,5,6,7};
+	int v_6[]{0,1};
+//		  00 01 02 03 04 05 06
+	int size_6{sizeof(v_6)/sizeof(v_6[0])};
+	int n_6 = identity(v_6, 0, size_6 - 1);
+	(n_6 == -1) ?	std::cout << "dont find identity" << std::endl:
+			std::cout << "the identity is v[" << n_6 << "]:" << v_6[n_6] << std::endl;
+	
+//	int v_7[]{10,12,15,36,40,1,7,9};
+//	int v_7[]{21,34,35,37,40,14,15,16,20};
+	int v_7[]{4,5,6};
+	int key_7{6};
+	int size_7{sizeof(v_7)/sizeof(v_7[0])};
+	int n_7 = search_sorted_rotated(v_7, 0, size_7 - 1, key_7);
+	(n_7 == -1) ?	std::cout << "dont the key in sorted rotated array" << std::endl:
+			std::cout << "find value in v[" << n_7 << "]:" << v_7[n_7] << std::endl;
+
 	return 0;
 }
 
+int search_sorted_rotated(int v[], int first, int last, int x){
+
+	if(first == last){
+		return 0;
+	}
+	while(first <= last){
+		int middle = (first + last) / 2;
+
+		if((last - first) == 1){
+			std::cout << first << " first|last " << last << std::endl;
+			return binary_search(v, first, last, x);
+/*			if(v[first] < v[last]){
+				std::cout << "teste_1\n";
+				return binary_search(v, first, last, x);
+//				return last;
+			}else if(v[first] > v[last]){
+				std::cout << "teste_2\n";
+				return binary_search(v, first, last, x);
+//				return first;
+			}*/
+		}
+
+		if(v[middle - 1] < v[middle] && v[middle + 1] < v[middle]){
+//			return binary_search(middle;
+			if(x < v[0]){
+				std::cout << "x<v[0]\n";
+				return binary_search(v, middle, last, x);
+			}else if(x > v[0]){
+				std::cout << "x>v[0]\n";
+				return binary_search(v, first, middle, x);
+
+			}/*else{
+				return 0;
+			}*/
+			/*else if(x > v[middle]){
+				binary_search(v, 
+			}*/
+		}else if(v[middle] < v[first]){
+			last = middle;
+		}else if(v[middle] > v[first]){
+			first = middle;
+		}
+		/*if(middle < v[0]){
+			first = middle;
+		}else if(middle > v[0]){
+			first = middle;
+		}*/
+	}
+	return -1;
+}
+
+int identity(int v[], int first, int last){
+	while(first <= last){
+		int middle = (first + last) / 2;
+
+		if(middle < v[middle]){
+			last = middle - 1;
+		}else if(middle > v[middle]){
+			first = middle + 1;
+		}else{
+			return middle;
+		}
+	}
+	return -1;
+}
+
+int *floor_ceiling(int v[], int first, int last, int x, int arr[]){
+	arr[0] = -1;
+	arr[1] = -1;
+	if(first == last){
+		if(v[first] < x){
+			arr[0] = v[first];
+		}else if(v[first] > x){
+			arr[1] = v[first];
+		}else{
+			arr[0] = v[first];
+			arr[1] = v[first];
+		}
+		return arr;
+	}
+	while(first <= last){
+		int middle = (first + last) / 2;
+
+		if((last - first) == 1){
+			if(v[first] <= x && x <= v[last]){
+				arr[0] = v[first];
+				arr[1] = v[last];
+			}else if(v[first] < x && v[last] < x){
+				arr[0] = v[last];
+			}else if(v[first] > x && v[first] < v[last]){
+				arr[1] = v[first];
+			}
+			return arr;
+		}
+		if(x < v[middle]){
+			last = middle;
+		}else if(x > v[middle]){
+			first = middle;
+		}else{
+			if(x >= v[middle - 1] && x <= v[middle + 1]){
+				arr[0] = v[middle - 1];
+				arr[1] = v[middle + 1];
+				return arr;
+			}
+		}
+
+	}
+	return arr;
+}
+
+
 int binary_search_duplicates(int v[], int first, int last, int x){
 	while(first <= last){
-		int middle = (first + last ) / 2;
+		int middle = (first + last) / 2;
 		if( x < v[middle]){
 			last = middle - 1;
 		}else if(x > v[middle]){
